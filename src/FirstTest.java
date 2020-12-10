@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -98,6 +99,27 @@ public class FirstTest {
         Assert.assertTrue("Articles still visible", countOfElements(By.id("org.wikipedia:id/page_list_item_container")) == 0);
     }
 
+    @Test
+    public void testSearchResultsText()
+    {
+        String search_word="Java";
+        //ткнём в поиск
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "Cannot find search element", 3);
+        //поищем слово
+        waitForElementAndSendKeys(By.xpath("//*[contains(@text, 'Search…')]"),search_word,"Cannot find search input",3);
+        //проверим, что в каждом результате есть слово
+        testTextSearchResults(By.id("org.wikipedia:id/page_list_item_title"),search_word,"Not all articles contains search text");
+    }
+
+    private void testTextSearchResults(By by, String text, String error_text)
+    {
+        List<WebElement> list = driver.findElements(by);
+        for(WebElement el : list)
+        {
+            System.out.println(el.getAttribute("text"));
+            Assert.assertTrue(error_text,el.getAttribute("text").contains(text));
+        }
+    }
 
     private int countOfElements(By by)
     {
