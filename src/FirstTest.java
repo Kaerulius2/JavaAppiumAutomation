@@ -83,6 +83,29 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void testSearchSeveralArtAndCancel()
+    {
+        //ткнём в поиск
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "Cannot find search element", 3);
+        //поищем слово apple
+        waitForElementAndSendKeys(By.xpath("//*[contains(@text, 'Search…')]"),"apple","Cannot find search input",3);
+        //убедимся, что контейнеров для статей хотя бы больше 1
+        Assert.assertTrue("Few articles found", countOfElements(By.id("org.wikipedia:id/page_list_item_container"))>1);
+        //ткнём крест
+        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"), "Cannot find close cross element", 3);
+        //убедимся, что все контейнеры исчезли
+        Assert.assertTrue("Articles still visible", countOfElements(By.id("org.wikipedia:id/page_list_item_container")) == 0);
+    }
+
+
+    private int countOfElements(By by)
+    {
+        int count = driver.findElements(by).size();
+        return count;
+    }
+
+
     private void assertElementHasText(By by, String text, String error_message)
     {
         WebElement element = waitForElementPresent(by,"Element " + by + " not found");
