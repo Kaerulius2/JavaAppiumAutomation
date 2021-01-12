@@ -307,6 +307,18 @@ public class FirstTest {
         Assert.assertEquals("Article title not equal search result", second_art_title, second_search);
     }
 
+    @Test
+    public void testArticleHasTitle() throws InterruptedException {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"), "Cannot find search element", 3);
+
+        waitForElementAndSendKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java", "Cannot find search input", 3);
+
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"), "Error finding JAVA", 5);
+        //в нормальной ситуации тест падает, так как статья не успевает открыться,а появления мы не ждём - проверим с задержкой
+        //Thread.sleep(5000);
+        assertElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "Article has no title");
+    }
+
     private void testTextSearchResults(By by, String text, String error_text)
     {
         List<WebElement> list = driver.findElements(by);
@@ -435,7 +447,16 @@ public class FirstTest {
     {
         int amount_of_elements = getAmountOfElements(by);
         if(amount_of_elements>0){
-            String default_message = "An element " + by.toString() + " supposed to be not present";
+            String default_message = "An element " + by.toString() + " supposed to be not present.";
+            throw new AssertionError(default_message + " " + error_message);
+        }
+    }
+
+    private void assertElementPresent(By by, String error_message)
+    {
+        int amount_of_elements = getAmountOfElements(by);
+        if(amount_of_elements==0){
+            String default_message = "An element " + by.toString() + " supposed to be present.";
             throw new AssertionError(default_message + " " + error_message);
         }
     }
