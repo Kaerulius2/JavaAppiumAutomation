@@ -71,6 +71,26 @@ public class MainPageObject {
         }
     }
 
+    public void swipeUpTillElementAppear(String locator, String error_message, int max_swipes)
+    {
+        int already_swiped = 0;
+
+        while(!this.isElementLocatedOntheScreen(locator)){
+            if(already_swiped>max_swipes){
+                Assert.assertTrue(error_message,this.isElementLocatedOntheScreen(locator));
+            }
+            swipeUpQuick();
+            ++already_swiped;
+        }
+    }
+
+    public boolean isElementLocatedOntheScreen(String locator)
+    {
+        int element_location_by_y = this.waitForElementPresent(locator,"Cannot find element by locator",2).getLocation().getY();
+        int screen_size_by_y = driver.manage().window().getSize().getHeight();
+        return element_location_by_y < screen_size_by_y;
+    }
+
     public void assertElementHasText(String locator, String text, String error_message)
     {
         WebElement element = waitForElementPresent(locator,"Element " + locator + " not found");
