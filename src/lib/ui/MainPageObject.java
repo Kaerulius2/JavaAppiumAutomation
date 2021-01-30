@@ -2,8 +2,10 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.touch.TapOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
+import lib.Platform;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -23,6 +25,22 @@ public class MainPageObject {
 
     public MainPageObject(AppiumDriver driver){
         this.driver = driver;
+    }
+
+    public void clickElementToTheRightUpperCorner(String locator, String error_message)
+    {
+        WebElement element = this.waitForElementPresent(locator + "/..", error_message);
+        int right_x = element.getLocation().getX();
+        int upper_y = element.getLocation().getY();
+        int lower_y = upper_y + element.getSize().getHeight();
+        int middle_y = (upper_y + lower_y) / 2;
+        int width = element.getSize().getWidth();
+
+        int point_to_click_x = (right_x + width) - 3;
+        int point_to_click_y = middle_y;
+
+        TouchAction action = new TouchAction(driver);
+        action.tap(PointOption.point(point_to_click_x,point_to_click_y)).perform();
     }
 
     public void testTextSearchResults(By by, String text, String error_text)
@@ -157,12 +175,17 @@ public class MainPageObject {
         TouchAction action = new TouchAction(driver);
 
 
-        action
-                .press(PointOption.point(right_x,middle_y))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(300)))
-                .moveTo(PointOption.point(left_x,middle_y))
-                .release()
-                .perform();
+        action.press(PointOption.point(right_x,middle_y));
+        action.waitAction(WaitOptions.waitOptions(Duration.ofMillis(300)));
+        if(Platform.getInstance().isAndroid()){
+            action.moveTo(PointOption.point(left_x,middle_y));
+        }else{
+            int offset_x = (-1 * element.getSize().getWidth());
+            action.moveTo((PointOption.point(offset_x, 0)));
+        }
+
+        action.release();
+        action.perform();
     }
 
     public int getAmountOfElements(String locator)

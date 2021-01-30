@@ -9,6 +9,7 @@ abstract public class ArticlePageObject extends MainPageObject
 
     protected static String
             TITLE,
+            TITLE2,
             FOOTER_ELEMENT,
             OPTIONS_BUTTON,
             OPTIONS_ADD_TO_MY_LIST_BUTTON,
@@ -16,7 +17,8 @@ abstract public class ArticlePageObject extends MainPageObject
             MY_LIST_NAME_INPUT,
             MY_LIST_OK_BUTTON,
             CLOSE_ARTICLE_BUTTON,
-            EXISTING_LIST_TPL;
+            EXISTING_LIST_TPL,
+            CLOSE_DIALOG_CROSS;
 
     //----------TEMPLATE METHODS------------
     private static String getFolderElement(String folder)
@@ -29,21 +31,24 @@ abstract public class ArticlePageObject extends MainPageObject
         super(driver);
     }
 
-    public WebElement waitForTitleElement()
+    public WebElement waitForTitleElement(int num)
     {
-        return this.waitForElementPresent(TITLE, "Cannot find article title",15);
+        if(num==1) {
+            return this.waitForElementPresent(TITLE, "Cannot find first article title", 15);
+        }else {
+            return this.waitForElementPresent(TITLE2, "Cannot find second article title", 15);
+        }
+    }
+    public String getiOSArticleTitle(int num)
+    {
+        WebElement title_element = waitForTitleElement(num);
+        return title_element.getAttribute("name");
     }
 
-    public String getArticleTitle()
+    public String getAndroidArticleTitle()
     {
-        WebElement title_element = waitForTitleElement();
-        if(Platform.getInstance().isAndroid())
-        {
-            return title_element.getAttribute("text");
-        }else
-        {
-            return title_element.getAttribute("name");
-        }
+        WebElement title_element = waitForTitleElement(1);
+        return title_element.getAttribute("text");
 
     }
 
@@ -91,5 +96,13 @@ abstract public class ArticlePageObject extends MainPageObject
         //тут появится выбор - новый лист, или имеющийся - нужно кликнуть по имеющемуся
         this.waitForElementAndClick(getFolderElement(name_of_folder),"Cannot find existing folder to save article",5);
 
+    }
+
+    public void addArticleToMySaved() {
+        this.waitForElementAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON,"Cannot find option to add to list",5);
+    }
+
+    public void closeLoginToSyncDialog() {
+        this.waitForElementAndClick(CLOSE_DIALOG_CROSS, "Cannot find cross (x) to close dialog",5);
     }
 }

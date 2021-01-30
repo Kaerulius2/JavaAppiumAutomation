@@ -1,6 +1,7 @@
 package tests;
 
 import lib.CoreTestCase;
+import lib.Platform;
 import lib.ui.ArticlePageObject;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.ArticlePageObjectFactory;
@@ -19,7 +20,12 @@ public class ArticleTests extends CoreTestCase
         SearchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
         ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
 
-        String article_title = ArticlePageObject.getArticleTitle();
+        String article_title;
+        if(Platform.getInstance().isAndroid()){
+            article_title = ArticlePageObject.getAndroidArticleTitle();
+        } else{
+            article_title = ArticlePageObject.getiOSArticleTitle(1);
+        }
 
         assertEquals("We see unexpected Article title","Java (programming language)", article_title);
     }
@@ -33,7 +39,7 @@ public class ArticleTests extends CoreTestCase
         SearchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
 
         ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
-        ArticlePageObject.waitForTitleElement();
+        ArticlePageObject.waitForTitleElement(1);
         ArticlePageObject.swipeToFooter();
     }
 
